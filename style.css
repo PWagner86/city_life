@@ -1,3 +1,10 @@
+@font-face {
+    font-family: "Montserrat";
+    src: 
+        local("Montserrat"),
+        url("./assets/font/Montserrat-Regular.ttf") format("ttf");
+}
+  
 *,
 *::before,
 *::after {
@@ -9,5 +16,22 @@
 body {
     max-width: 2000px;
     height: 100svh;
+    margin: 0 auto;
     overflow: hidden;
+    font-family: "Montserrat";
+}
+
+.main-header {
+    height: 15%;
+}
+
+.main-container {
+    height: 85%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main__canvas {
+    background-color: green;
 }
