@@ -1,5 +1,12 @@
+@font-face {
+  font-family: "Montserrat";
+  src: local("Montserrat"),
+    url("./assets/font/Montserrat-Regular.ttf") format("ttf");
+}
+
 :root {
   --canvas-background: #63df63;
+  --main-font: "Montserrat";
 }
 
 *,
@@ -15,6 +22,7 @@ body {
   height: 100svh;
   margin: 0 auto;
   overflow: hidden;
+  font-family: var(--main-font);
 }
 
 .main__header {
