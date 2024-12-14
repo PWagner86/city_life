@@ -9,5 +9,13 @@ export default class Manager {
   init() {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
+    this.#animate();
+  }
+
+  #animate() {
+    requestAnimationFrame((t) => {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.#animate();
+    })
   }
 }
