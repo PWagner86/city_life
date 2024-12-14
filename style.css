@@ -1,0 +1,37 @@
+:root {
+  --canvas-background: #63df63;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 2000px;
+  height: 100svh;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.main__header {
+  height: 10%;
+}
+
+.app__container {
+  height: 90%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.canvas__container {
+  width: 80%;
+  height: 100%;
+}
+
+#main__canvas {
+  background-color: var(--canvas-background);
+}
