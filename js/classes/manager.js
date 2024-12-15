@@ -13,13 +13,14 @@ export default class Manager {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     this.#animate();
+    console.log(this.city.traffic);
   }
 
   #animate() {
     requestAnimationFrame((t) => {
       this.ctx.clearRect(0, 0, this.width, this.height);
       this.city.drawStreets(this.ctx);
-      this.city.updateCar(this.ctx, 0, this.height / 2);
+      this.city.updateTraffic(this.ctx);
       this.#animate();
     });
   }
