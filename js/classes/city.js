@@ -1,82 +1,94 @@
-import { getRandomInt, getRandomIntMinMax } from "../utils/math.js";
+import { getRandomIntMinMax, lerp, vLerp } from "../utils/math.js";
+import Point from "./primitives/point.js";
+import Segment from "./primitives/segment.js";
 import Car from "./car.js";
 
 export default class City {
   constructor(width, height) {
     this.width = width;
     this.height = height;
-    this.center = { x: this.width / 2, y: this.height / 2 };
+    this.center = new Point(this.width / 2, this.height / 2);
+    this.streetStart = new Point(0, this.center.y);
+    this.streetEnd = new Point(this.width, this.center.y);
     this.streetWidth = 100;
-    this.halfLane = this.streetWidth / 2 / 2;
-    this.streetInToTown = { x: this.width / 2, y: this.center.y };
-    this.firstCurve = { x: this.width / 2 + 50, y: this.center.y - 20 };
-    this.secondCurve = { x: this.width / 2 + 80, y: this.center.y - 60 };
-    this.streetOutOfTown = { x: this.width - 400, y: -100 };
+    this.boardWalkWidth = 75;
+    this.gap = (this.streetWidth - this.boardWalkWidth) / 2;
+    this.boardWalkTopStart = new Point(
+      0,
+      this.center.y - this.streetWidth + this.gap
+    );
+    this.boardWalkTopEnd = new Point(
+      this.width,
+      this.center.y - this.streetWidth + this.gap
+    );
+    this.boardWalkBottomStart = new Point(
+      0,
+      this.center.y + this.streetWidth - this.gap
+    );
+    this.boardwalktBottomEnd = new Point(
+      this.width,
+      this.center.y + this.streetWidth - this.gap
+    );
     this.trafficCount = 30;
-    this.traffic = [];
-
-    this.setTraffic();
+    this.trafficTop = [];
+    this.trafficBottom = [];
+    this.speed = 1;
+    this.maxOffset = 5000;
+    this.minOffset = 100;
   }
 
-  drawStreets(ctx) {
+  setStreet(ctx) {
+    const street = new Segment(this.streetStart, this.streetEnd);
+    const middleLine = new Segment(this.streetStart, this.streetEnd);
+    street.draw(ctx, { width: this.streetWidth, color: "grey" });
     ctx.save();
-    ctx.beginPath();
-    ctx.strokeStyle = "#696363";
-    ctx.lineWidth = this.streetWidth;
-    ctx.moveTo(0, this.center.y);
-    ctx.lineTo(this.streetInToTown.x, this.streetInToTown.y);
-    ctx.lineTo(this.firstCurve.x, this.firstCurve.y);
-    ctx.lineTo(this.secondCurve.x, this.secondCurve.y);
-    ctx.lineTo(this.streetOutOfTown.x, this.streetOutOfTown.y);
-    ctx.stroke();
+    ctx.setLineDash([20, 10]);
+    middleLine.draw(ctx, { color: "white" });
     ctx.restore();
+  }
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 3;
-    ctx.setLineDash([30, 30]);
-    ctx.moveTo(0, this.center.y);
-    ctx.lineTo(this.streetInToTown.x, this.streetInToTown.y);
-    ctx.lineTo(this.firstCurve.x, this.firstCurve.y);
-    ctx.lineTo(this.secondCurve.x, this.secondCurve.y);
-    ctx.lineTo(this.streetOutOfTown.x, this.streetOutOfTown.y);
-    ctx.stroke();
-    ctx.restore();
+  setBoardWalk(ctx) {
+    const boardWalkTop = new Segment(
+      this.boardWalkTopStart,
+      this.boardWalkTopEnd
+    );
+    const boardWalkBottom = new Segment(
+      this.boardWalkBottomStart,
+      this.boardwalktBottomEnd
+    );
+    boardWalkTop.draw(ctx, { width: 75, color: "darkgrey" });
+    boardWalkBottom.draw(ctx, { width: 75, color: "darkgrey" });
   }
 
   setTraffic() {
-    for (let i = 0; i < this.trafficCount; i++) {
-      const randomX = getRandomIntMinMax(50, 1000);
-      this.traffic.push(
-        new Car(randomX * -1, this.center.y + this.halfLane - 2)
-      );
+    if(this.trafficCount <= 1) {
+      this.trafficTop.push(new Car(this.width + 10, this.center.y - this.streetWidth / 4))
     }
+    for(let i = 0; i < this.trafficCount / 2; i++) {
+      const randIntTop = getRandomIntMinMax(this.width + this.minOffset, this.width + this.maxOffset);
+      const randIntBottom = getRandomIntMinMax(-this.minOffset, -this.maxOffset);
+      this.trafficTop.push(new Car(randIntTop, this.center.y - this.streetWidth / 4))
+      this.trafficBottom.push(new Car(randIntBottom, this.center.y + this.streetWidth / 4))
+    }
+    console.log(this.trafficBottom, this.trafficTop);
   }
 
-  updateTraffic(ctx) {
-    for (const car of this.traffic) {
+  moveTraffic(ctx) {
+    const randIntTop = getRandomIntMinMax(this.width + this.minOffset, this.width + this.maxOffset);
+    const randIntBottom = getRandomIntMinMax(-this.minOffset, -this.maxOffset);
+    this.trafficTop.forEach(car => {
       car.draw(ctx);
-      if (car.x < this.streetInToTown.x) {
-        car.x += 0.5;
+      car.x -= this.speed;
+      if(car.x < -this.minOffset) {
+        car.x = randIntTop;
       }
-      if (car.x >= this.streetInToTown.x && car.x < this.firstCurve.x) {
-        car.x += 0.4;
-        car.y -= 0.2;
+    })
+    this.trafficBottom.forEach(car => {
+      car.draw(ctx);
+      car.x += this.speed;
+      if(car.x > this.width + this.minOffset) {
+        car.x = randIntBottom;
       }
-      if (car.x >= this.firstCurve.x && car.x < this.secondCurve.x) {
-        car.x += 0.2;
-        car.y -= 0.2;
-      }
-      if (car.x >= this.secondCurve.x) {
-        car.x += 0.3;
-        car.y -= 0.5;
-      }
-
-      if (car.y < -50) {
-        car.x = getRandomIntMinMax(50, 5000) * -1;
-        car.y = this.center.y + this.halfLane - 2;
-      }
-    }
+    })
   }
 }

@@ -1,4 +1,7 @@
 import City from "./city.js";
+import Point from "./primitives/point.js";
+import Segment from "./primitives/segment.js";
+import { vLerp } from "../utils/math.js";
 
 export default class Manager {
   constructor(canvas, width, height) {
@@ -12,16 +15,20 @@ export default class Manager {
   init() {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
+    this.city.setTraffic();
     this.#animate();
-    console.log(this.city.traffic);
   }
 
   #animate() {
     requestAnimationFrame((t) => {
       this.ctx.clearRect(0, 0, this.width, this.height);
-      this.city.drawStreets(this.ctx);
-      this.city.updateTraffic(this.ctx);
+      this.city.setStreet(this.ctx);
+      this.city.setBoardWalk(this.ctx);
+      this.city.moveTraffic(this.ctx);
       this.#animate();
     });
   }
+
 }
+
+
