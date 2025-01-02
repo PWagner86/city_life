@@ -61,34 +61,67 @@ export default class City {
   }
 
   setTraffic() {
-    if(this.trafficCount <= 1) {
-      this.trafficTop.push(new Car(this.width + 10, this.center.y - this.streetWidth / 4))
+    if (this.trafficCount <= 1) {
+      this.trafficTop.push(
+        new Car(this.width + 10, this.center.y - this.streetWidth / 4)
+      );
     }
-    for(let i = 0; i < this.trafficCount / 2; i++) {
-      const randIntTop = getRandomIntMinMax(this.width + this.minOffset, this.width + this.maxOffset);
-      const randIntBottom = getRandomIntMinMax(-this.minOffset, -this.maxOffset);
-      this.trafficTop.push(new Car(randIntTop, this.center.y - this.streetWidth / 4))
-      this.trafficBottom.push(new Car(randIntBottom, this.center.y + this.streetWidth / 4))
+    for (let i = 0; i < this.trafficCount / 2; i++) {
+      const randIntTop = getRandomIntMinMax(
+        this.width + this.minOffset,
+        this.width + this.maxOffset
+      );
+      const randIntBottom = getRandomIntMinMax(
+        -this.minOffset,
+        -this.maxOffset
+      );
+      this.trafficTop.push(
+        new Car(randIntTop, this.center.y - this.streetWidth / 4)
+      );
+      this.trafficBottom.push(
+        new Car(randIntBottom, this.center.y + this.streetWidth / 4)
+      );
     }
-    console.log(this.trafficBottom, this.trafficTop);
+    this.checkTraffic(this.trafficTop);
+    this.checkTraffic(this.trafficBottom);
+  }
+
+  checkTraffic(array) {
+    const margin = 100;
+    for (let i = 0; i < array.length; i++) {
+      for (let j = 0; j < array.length; j++) {
+        if (i !== j) {
+          if (
+            array[i].x < array[j].x + array[j].width + margin &&
+            array[i].x + array[i].width + margin > array[j].x
+          ) {
+            const shift = array[i].x < array[j].x ? -margin : margin;
+            array[i].x += shift;
+          }
+        }
+      }
+    }
   }
 
   moveTraffic(ctx) {
-    const randIntTop = getRandomIntMinMax(this.width + this.minOffset, this.width + this.maxOffset);
+    const randIntTop = getRandomIntMinMax(
+      this.width + this.minOffset,
+      this.width + this.maxOffset
+    );
     const randIntBottom = getRandomIntMinMax(-this.minOffset, -this.maxOffset);
-    this.trafficTop.forEach(car => {
-      car.draw(ctx);
+    this.trafficTop.forEach((car) => {
+      car.draw(ctx, 270);
       car.x -= this.speed;
-      if(car.x < -this.minOffset) {
+      if (car.x < -this.minOffset) {
         car.x = randIntTop;
       }
-    })
-    this.trafficBottom.forEach(car => {
+    });
+    this.trafficBottom.forEach((car) => {
       car.draw(ctx);
       car.x += this.speed;
-      if(car.x > this.width + this.minOffset) {
+      if (car.x > this.width + this.minOffset) {
         car.x = randIntBottom;
       }
-    })
+    });
   }
 }

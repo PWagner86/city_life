@@ -1,7 +1,4 @@
 import City from "./city.js";
-import Point from "./primitives/point.js";
-import Segment from "./primitives/segment.js";
-import { vLerp } from "../utils/math.js";
 
 export default class Manager {
   constructor(canvas, width, height) {
@@ -28,7 +25,4 @@ export default class Manager {
       this.#animate();
     });
   }
-
 }
-
-
