@@ -6,9 +6,6 @@ export default class Car {
     this.y = y - width / 2;
     this.length = length;
     this.width = width;
-    this.red = getRandomInt(255);
-    this.green = getRandomInt(255);
-    this.blue = getRandomInt(255);
     this.pathToImg = "assets/pics/cars/";
     this.imgSrc = ["sports_car.png", "white_car.png", "police_car.png"];
     this.randInt = getRandomInt(this.imgSrc.length);

@@ -2,6 +2,7 @@ import { getRandomIntMinMax, lerp, vLerp } from "../utils/math.js";
 import Point from "./primitives/point.js";
 import Segment from "./primitives/segment.js";
 import Car from "./car.js";
+import Building from "./building.js";
 
 export default class City {
   constructor(width, height) {
@@ -12,6 +13,10 @@ export default class City {
     this.streetEnd = new Point(this.width, this.center.y);
     this.streetWidth = 100;
     this.boardWalkWidth = 75;
+    this.boardWalkUpperEdge =
+      this.center.y - this.boardWalkWidth - this.streetWidth / 2;
+    this.boardWalkLowerEdge =
+      this.center.y + this.boardWalkWidth + this.streetWidth / 2;
     this.gap = (this.streetWidth - this.boardWalkWidth) / 2;
     this.boardWalkTopStart = new Point(
       0,
@@ -35,9 +40,20 @@ export default class City {
     this.speed = 1;
     this.maxOffset = 5000;
     this.minOffset = 100;
+    this.buildings = [
+      new Building("Kiosk", 0, this.boardWalkUpperEdge - 50, 200, 50),
+      new Building("Bank", 250, this.boardWalkUpperEdge - 200, 400, 200),
+      new Building("Polizei", 700, this.boardWalkUpperEdge - 150, 300, 150),
+      new Building("Versicherung", 1050, this.boardWalkUpperEdge - 150, 200, 150),
+      new Building("Schule", 0, this.boardWalkLowerEdge, 250, 80),
+      new Building("Restaurant", 300, this.boardWalkLowerEdge, 120, 50),
+      new Building("Bar", 420, this.boardWalkLowerEdge, 50, 50),
+      new Building("Shopping-Center", 520, this.boardWalkLowerEdge, 400, 100),
+      new Building("Krankenhaus", 970, this.boardWalkLowerEdge, 250, 200)
+    ];
   }
 
-  setStreet(ctx) {
+  getStreet(ctx) {
     const street = new Segment(this.streetStart, this.streetEnd);
     const middleLine = new Segment(this.streetStart, this.streetEnd);
     street.draw(ctx, { width: this.streetWidth, color: "grey" });
@@ -47,7 +63,7 @@ export default class City {
     ctx.restore();
   }
 
-  setBoardWalk(ctx) {
+  getBoardWalk(ctx) {
     const boardWalkTop = new Segment(
       this.boardWalkTopStart,
       this.boardWalkTopEnd
@@ -56,8 +72,19 @@ export default class City {
       this.boardWalkBottomStart,
       this.boardwalktBottomEnd
     );
-    boardWalkTop.draw(ctx, { width: 75, color: "darkgrey" });
-    boardWalkBottom.draw(ctx, { width: 75, color: "darkgrey" });
+    boardWalkTop.draw(ctx, { width: this.boardWalkWidth, color: "darkgrey" });
+    boardWalkBottom.draw(ctx, {
+      width: this.boardWalkWidth,
+      color: "darkgrey",
+    });
+  }
+
+  setBuilding() {}
+
+  getBuilding(ctx) {
+    for (const building of this.buildings) {
+      building.draw(ctx);
+    }
   }
 
   setTraffic() {
