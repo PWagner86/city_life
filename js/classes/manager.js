@@ -19,9 +19,10 @@ export default class Manager {
   #animate() {
     requestAnimationFrame((t) => {
       this.ctx.clearRect(0, 0, this.width, this.height);
-      this.city.setStreet(this.ctx);
-      this.city.setBoardWalk(this.ctx);
+      this.city.getStreet(this.ctx);
+      this.city.getBoardWalk(this.ctx);
       this.city.moveTraffic(this.ctx);
+      this.city.getBuilding(this.ctx);
       this.#animate();
     });
   }
